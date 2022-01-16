@@ -5,6 +5,29 @@
 
 using namespace std;
 
+void winner(string player){
+    system("clear");
+    cout << "YOLO! " << player << " won the game, congrats." << endl << "PRESS ENTER TO EXIT";
+    char choice;
+    choice = getch();
+    while (choice!='\n'){
+        continue;
+    }
+    exit(0);
+
+}
+
+void tie(){
+    system("clear");
+    cout << "There's No Winner Here! What a Shame." << endl << "PRESS ENTER TO EXIT";
+    char choice;
+    choice = getch();
+    while (choice!='\n'){
+        continue;
+    }
+    exit(0);
+}
+
 void flip_h(char table[], int size, int base, char player){
     int x;
     for (int i=0;i<size;i++){
@@ -45,7 +68,39 @@ void flip_v(char table[], int size, int base, char player){
     }
 }
 void flip_d1(char table[], int size, int base, char player){
-    
+    int x=base%size;
+    int y=base-(x*size)-x;
+    for (int i=y;i<size*size;i+=(size+1)){
+        if (table[i]==player){
+            for (int j=i;j<size*size;j+=(size+1)){
+                if (table[j]=='E'){
+                    break;
+                } else if (table[j]==player){
+                    for (int l=i;l<=j;l+=(size+1)){
+                        table[l]=player;
+                    }
+                }
+            }
+        }
+    }
+}
+
+void flip_d2(char table[], int size, int base, char player){
+    int x=base%size;
+    int y=base-(x*size)+x;
+    for (int i=y;i<size*size;i+=(size-1)){
+        if (table[i]==player){
+            for (int j=i;j<size*size;j+=(size-1)){
+                if (table[j]=='E'){
+                    break;
+                } else if (table[j]==player){
+                    for (int l=i;l<=j;l+=(size-1)){
+                        table[l]=player;
+                    }
+                }
+            }
+        }
+    }
 }
 
 string space = "        ";
@@ -90,6 +145,15 @@ void showtable(char table[],int size, int TableSize, string players[], char symb
         }
     }
     cout << "exit : E" << space << "save : V" << space << "up : W" << space << "down : S" << space << "right : D" << space << "left : A" << endl;
+    if (count_pieces1+count_pieces2==size*size){
+        if (count_pieces1>count_pieces2){
+            winner(player1);
+        } else if (count_pieces2>count_pieces1){
+            winner(player2);
+        } else {
+            tie();
+        }
+    }
 }
 void move(int size, char table[],char player,string players[], char symbols[]){
     char choice;
@@ -121,8 +185,7 @@ void move(int size, char table[],char player,string players[], char symbols[]){
             case '\n':
                 if(table[base]=='E'){
                     table[base]=player;
-                    flip_h(table,size,base,player);
-                    flip_v(table,size,base,player);
+
                 } else {
                     cout << "invalid" << endl;
                     move(size,table,player,players,symbols);                
@@ -144,6 +207,10 @@ void move(int size, char table[],char player,string players[], char symbols[]){
             showtable(table,size,size*size,players, symbols);
             c++;
     }
+    flip_h(table,size,base,player);
+    flip_v(table,size,base,player);
+    flip_d1(table,size,base,player);
+    flip_d2(table,size,base,player);
 }
 
 
